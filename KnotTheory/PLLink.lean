@@ -1,6 +1,5 @@
 import Mathlib
 
-namespace KnotTheory
 
 variable {E : Type*} [AddCommGroup E] [Module ℝ E]
 
@@ -1173,5 +1172,3 @@ def AddAt [DecidableEq E] (L : PLLink E) (A : E) (hA : A ∈ L.V)
                   Equiv.swap_apply_of_ne_of_ne] using h
               exact L.injection P hPV Q hQV u v ⟨hu, hv⟩ hold
   }
-
-end KnotTheory

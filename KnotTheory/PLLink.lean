@@ -739,9 +739,9 @@ may remove the point C.
 -/
 -- Removes the focus if it would lie in the segment between
 -- the previous and next vertices.
-def EraseAt [DecidableEq E] (L : PLLink E) (A : E)
+def EraseAtCollinear [DecidableEq E] (L : PLLink E) (A : E)
   (hA : A ∈ L.V)
-  (t : ℝ) (ht : InCO t) (C : L.V) (hC : C = L.next A)
+  (t : ℝ) (ht : InCO t) (C : E) (hC : C = L.next A)
   (hCol : C = LinkFunction L (A, t)) : PLLink E := {
 
   next := Equiv.trans (Equiv.swap A C) L.next
@@ -749,8 +749,10 @@ def EraseAt [DecidableEq E] (L : PLLink E) (A : E)
   fix := by
     intro p
     aesop
-    · have hnp : L.next (L.next p) ≠ p := by
-        exact Link.no_two_cycles L p hA
+    · have nhCol : L.next p ≠ LinkFunction L (p, t) := by
+        apply Link.next_not_repr_with_vert
+        exact hA
+        exact ht
       contradiction
     · exact (L.fix p).mp right a
     · exact (L.fix p).mpr a
@@ -759,39 +761,28 @@ def EraseAt [DecidableEq E] (L : PLLink E) (A : E)
     unfold LinkFunction at heq
     simp at heq
     aesop
-    · rw [←hC] at property
-      have ht' : t ≠ 0 := by
-        by_contra htz
-        rw [htz] at hC
-        rw [←Link.vertex_repr] at hC
-        contradiction
+    · have nhCol : L.next P ≠ LinkFunction L (P, t) := by
+        apply Link.next_not_repr_with_vert
         exact hA
-      have property' : LinkFunction L (P, t) ∉ L.V := by
-        exact Link.seg_not_vert L P hA t ht ht'
+        exact ht
       contradiction
     · have hC' : L.next Q ≠ LinkFunction L (Q, t) := by
         exact Link.next_not_repr_with_vert L Q hA t ht
-      symm at hC
       contradiction
     · have hC' : L.next A ≠ LinkFunction L (A, t) := by
         exact Link.next_not_repr_with_vert L A hA t ht
-      symm at hC
       contradiction
     · have hC' : L.next Q ≠ LinkFunction L (Q, t) := by
         exact Link.next_not_repr_with_vert L Q hA t ht
-      symm at hC
       contradiction
     · have hC' : L.next P ≠ LinkFunction L (P, t) := by
         exact Link.next_not_repr_with_vert L P hA t ht
-      symm at hC
       contradiction
     · have hC' : L.next Q ≠ LinkFunction L (Q, t) := by
         exact Link.next_not_repr_with_vert L Q hA t ht
-      symm at hC
       contradiction
     · have hC' : L.next A ≠ LinkFunction L (A, t) := by
         exact Link.next_not_repr_with_vert L A hA t ht
-      symm at hC
       contradiction
 
 
@@ -1171,4 +1162,77 @@ def AddAt [DecidableEq E] (L : PLLink E) (A : E) (hA : A ∈ L.V)
                 simpa [LinkFunction, hnextC, hCneA, hPA, hQA, hPneC, hQneC,
                   Equiv.swap_apply_of_ne_of_ne] using h
               exact L.injection P hPV Q hQV u v ⟨hu, hv⟩ hold
+  }
+
+/--
+(2)' [The converse of (2)] If there exists in space a triangle ABC
+that contains two adjacent edges AC and CB of K, and this
+triangle does not intersect K, except at the edges AC and CB,
+then we may delete the two edges AC, CB and add the edge
+AB
+-/
+def EraseAt [DecidableEq E] (L : PLLink E) (A : E)
+  (hA : A ∈ L.V)
+  (C : E) (hC : C = L.next A)
+  (hT : NonIntersectingTriangle L A C) : PLLink E := {
+
+  next := Equiv.trans (Equiv.swap A C) L.next
+  V := L.V.erase C
+  fix := by
+    intro p
+    aesop
+    · have hna : L.next (L.next p) ≠ p := by
+        apply Link.no_two_cycles
+        exact hA
+      contradiction
+    · have hna : L.next p ≠ p := (L.fix p).mp right
+      contradiction
+    · exact (L.fix p).mpr a
+  injection := by
+    intro P hP Q hQ u v huv heq
+    unfold LinkFunction at heq
+    aesop
+    · apply non_inter_tri_not_vert at hT
+      have hnT : L.next P ∈ L.V := by
+        apply Link.next_closed
+        exact hA
+      contradiction
+      exact hA
+    · apply non_inter_tri_not_vert at hT
+      have hnT : L.next Q ∈ L.V := by
+        apply Link.next_closed
+        exact hA
+      contradiction
+      exact hA
+    · apply non_inter_tri_not_vert at hT
+      have hnT : L.next A ∈ L.V := by
+        apply Link.next_closed
+        exact hA
+      contradiction
+      exact hA
+    · apply non_inter_tri_not_vert at hT
+      have hnT : L.next Q ∈ L.V := by
+        apply Link.next_closed
+        exact hA
+      contradiction
+      exact hA
+    · apply non_inter_tri_not_vert at hT
+      have hnT : L.next P ∈ L.V := by
+        apply Link.next_closed
+        exact hA
+      contradiction
+      exact hA
+    · apply non_inter_tri_not_vert at hT
+      have hnT : L.next Q ∈ L.V := by
+        apply Link.next_closed
+        exact hA
+      contradiction
+      exact hA
+    · apply non_inter_tri_not_vert at hT
+      have hnT : L.next A ∈ L.V := by
+        apply Link.next_closed
+        exact hA
+      contradiction
+      exact hA
+
   }

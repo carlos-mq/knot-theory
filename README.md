@@ -13,6 +13,5 @@ The first goal of the project is proving Reidemeister's theorem.
 ## To-do
 
 1. Improve documentation.
-2. Finish the proofs required for the inverse of elementary knot move (2) (see Murasugi, page 7).
-3. Define the notion of a regular diagram of links (see Murasugi, page 26).
-4. Define the notion of Reidemeister moves (see Murasugi, page 48).
+2. Define the notion of a regular diagram of links (see Murasugi, page 26).
+3. Define the notion of Reidemeister moves (see Murasugi, page 48).
